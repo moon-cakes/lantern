@@ -2,14 +2,19 @@ package kalah;
 
 import com.qualitascorpus.testsupport.IO;
 import com.qualitascorpus.testsupport.MockIO;
+import com.sun.istack.internal.NotNull;
 
 /**
  * This class is the starting point for the Modifiability Assignment.
  */
 public class Kalah {
+
+	@NotNull Player mCurrentPlayer;
+
 	public static void main(String[] args) {
 		new Kalah().play(new MockIO());
 	}
+
 	public void play(IO io) {
 		// Replace what's below with your implementation
 		io.println("+----+-------+-------+-------+-------+-------+-------+----+");
