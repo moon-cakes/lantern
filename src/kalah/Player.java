@@ -12,22 +12,12 @@ public class Player {
 
 	private List<House> mHouses = new ArrayList<>();
 	private Store mStore = new Store();
-	private int mScore;
 
 	public Player() {
 		for (int i = 0; i < NUMBER_OF_HOUSES; i++) {
 			mHouses.add(new House());
 		}
 		mStore.setOwner(this);
-	}
-
-	/**
-	 * Returns the player's store
-	 *
-	 * @return
-	 */
-	public Store getStore() {
-		return mStore;
 	}
 
 	/**
@@ -45,16 +35,24 @@ public class Player {
 	}
 
 	/**
-	 * Add the number of seeds collected to a players score
+	 * Returns the player's store
 	 *
-	 * @param seedsCollected The number of seeds collected in one round
+	 * @return
 	 */
-	public void addToScore(int seedsCollected) {
-		mScore += seedsCollected;
+	public Store getStore() {
+		return mStore;
 	}
 
+	/**
+	 * Get the total score for the player calculated from
+	 * @return
+	 */
 	public int getScore() {
-		return mScore;
+		int houseSeeds = 0;
+		for (House house : mHouses){
+			houseSeeds += house.getSeeds();
+		}
+		return mStore.getSeeds() + houseSeeds;
 	}
 
 }
