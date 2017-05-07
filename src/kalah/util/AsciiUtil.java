@@ -1,7 +1,6 @@
 package kalah.util;
 
 import kalah.House;
-import kalah.model.Pit;
 
 import java.util.List;
 

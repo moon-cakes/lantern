@@ -13,8 +13,5 @@ public interface Pit {
     int getSeeds();
 
     void setSeeds(int seeds);
-
-    @NotNull
-    Player getOwner();
 }
 

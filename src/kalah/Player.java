@@ -17,7 +17,6 @@ public class Player {
 		for (int i = 0; i < NUMBER_OF_HOUSES; i++) {
 			mHouses.add(new House());
 		}
-		mStore.setOwner(this);
 	}
 
 	/**
@@ -37,19 +36,20 @@ public class Player {
 	/**
 	 * Returns the player's store
 	 *
-	 * @return
+	 * @return The player's store
 	 */
 	public Store getStore() {
 		return mStore;
 	}
 
 	/**
-	 * Get the total score for the player calculated from
-	 * @return
+	 * Get the total score for the player calculated from the seeds in her store and seeds in the house
+	 *
+	 * @return The score for the player
 	 */
 	public int getScore() {
 		int houseSeeds = 0;
-		for (House house : mHouses){
+		for (House house : mHouses) {
 			houseSeeds += house.getSeeds();
 		}
 		return mStore.getSeeds() + houseSeeds;
