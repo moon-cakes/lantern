@@ -1,6 +1,5 @@
 package kalah;
 
-import com.sun.istack.internal.NotNull;
 import kalah.model.Pit;
 
 /**
