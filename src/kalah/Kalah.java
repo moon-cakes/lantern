@@ -94,9 +94,20 @@ public class Kalah {
 			}
 		}
 
+		io.println("Game over");
+		printBoard(io);
+
 		if (houseNumberSelected != CANCEL_CODE) {
-			io.println("Score" + String.valueOf(player1.getScore() + player1.getStore().getSeeds()) + String.valueOf
-					(player2.getScore() + player1.getStore().getSeeds()));
+			io.println("\tplayer 1:" + player1.getScore());
+			io.println("\tplayer 2:" + player2.getScore());
+
+			if (player1.getScore() > player2.getScore()) {
+				io.println("Player 1 wins!");
+			} else if (player2.getScore() > player1.getScore()) {
+				io.println("Player 2 wins!");
+			} else {
+				io.println("A tie!");
+			}
 		}
 	}
 
