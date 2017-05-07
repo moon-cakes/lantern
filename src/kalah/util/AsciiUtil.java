@@ -16,8 +16,8 @@ public class AsciiUtil {
 	private static String TOP_BOARD_TEMPLATE = "| P2 | 6[f] | 5[e] | 4[d] | 3[c] | 2[b] | 1[a] | s |";
 	private static String BOTTOM_BOARD_TEMPLATE = "| s | 1[a] | 2[b] | 3[c] | 4[d] | 5[e] | 6[f] | P1 |";
 
-	private static String PLAYER_1_TURN = "Player 1's turn - Specify house number or 'q' to quit:";
-	private static String PLAYER_2_TURN = "Player 2's turn - Specify house number or 'q' to quit:";
+	private static String PLAYER_1_TURN = "Player P1's turn - Specify house number or 'q' to quit: ";
+	private static String PLAYER_2_TURN = "Player P2's turn - Specify house number or 'q' to quit: ";
 
 	public static String getLineDecor1() {
 		return LINE_DECOR_1;
@@ -64,16 +64,13 @@ public class AsciiUtil {
 	/**
 	 * Update the current number of seed's in a Store with a new number of seeds
 	 *
-	 * @param storeSeeds The number of seeds the store should contain
+	 * @param seeds The number of seeds the store contains
 	 * @param board      The template of the board to use
 	 * @return A String containing the updated number of seeds in the store
 	 */
-	private static String replaceStoreSeeds(int storeSeeds, String board) {
-		if (storeSeeds < 10) {
-			return board.replace("s", " " + String.valueOf(storeSeeds));
-		} else {
-			return board.replace("s", String.valueOf(storeSeeds));
-		}
+	private static String replaceStoreSeeds(int seeds, String board) {
+		return seeds < 10 ? board.replace("s", " " + String.valueOf(seeds)) :
+				board.replace("s", String.valueOf(seeds));
 	}
 
 	/**
@@ -88,11 +85,8 @@ public class AsciiUtil {
 		for (int i = 0; i < house.size(); i++) {
 			String characterToReplace = String.valueOf(alphabet[i]);
 			int seeds = house.get(i).getSeeds();
-			if (seeds < 10) {
-				board = board.replace(characterToReplace, " " + String.valueOf(seeds));
-			} else {
-				board = board.replace(characterToReplace, String.valueOf(seeds));
-			}
+			board = seeds < 10 ? board.replace(characterToReplace, " " + String.valueOf(seeds)) :
+					board.replace(characterToReplace, String.valueOf(seeds));
 		}
 		return board;
 	}
