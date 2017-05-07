@@ -8,17 +8,27 @@ import kalah.model.Pit;
  */
 public class House implements Pit {
 
-    private static int INITIAL_NUMBER_OF_SEEDS = 6;
+    private static int INITIAL_NUMBER_OF_SEEDS = 4;
 
-    private int mCurrentSeeds;
+    private int mSeeds;
 
     public House() {
-        this.mCurrentSeeds = INITIAL_NUMBER_OF_SEEDS;
+        this.mSeeds = INITIAL_NUMBER_OF_SEEDS;
+    }
+
+    @Override
+    public void addSeeds(int numberOfSeeds) {
+        mSeeds += numberOfSeeds;
     }
 
     @Override
     public int getSeeds() {
-        return mCurrentSeeds;
+        return mSeeds;
+    }
+
+    @Override
+    public void setSeeds(int seeds) {
+        mSeeds = seeds;
     }
 
     @Override
