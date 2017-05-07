@@ -71,6 +71,8 @@ public class Kalah {
 						// swap player's board if the current index is the last index on the board
 						playerBoardToDistributeOn = playerBoardToDistributeOn.equals(player1) ? player2 : player1;
 						currentIndex = 0;
+						currentIndex = -1; // the current index should be 0, but set it to -1 as the for
+						// loop is going to increment it again
 					}
 				}
 
