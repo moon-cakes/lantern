@@ -8,10 +8,13 @@ import kalah.Player;
  */
 public interface Pit {
 
+    void addSeeds(int numberOfSeeds);
+
     int getSeeds();
+
+    void setSeeds(int seeds);
 
     @NotNull
     Player getOwner();
-
 }
 
