@@ -22,26 +22,26 @@ public class Kalah {
 	@NotNull Player player2 = new Player();
 	@NotNull private Player mCurrentPlayer = player1;
 
-	private int houseNumberSelected;
-
 	public static void main(String[] args) {
 		new Kalah().play(new MockIO());
 	}
 
 	public void play(IO io) {
-		while (!isGameFinished()) {
+
+		int houseNumberSelected = 0;
+
+		while (true) {
 			printBoard(io);
+
+			if (isGameFinished()) break;
 
 			houseNumberSelected = io.readInteger(mCurrentPlayer.equals(player1) ? AsciiUtil.getPlayer1Turn() :
 					AsciiUtil.getPlayer2Turn(), MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER, CANCEL_CODE, "q");
 
-			if (houseNumberSelected == CANCEL_CODE) {
-				io.println("Game over");
-				break;
-			}
+			if (houseNumberSelected == CANCEL_CODE) break;
 
-			int numberOfSeeds = mCurrentPlayer.getHouse(houseNumberSelected).getSeeds();
-			mCurrentPlayer.getHouse(houseNumberSelected).setSeeds(0);
+			int numberOfSeeds = mCurrentPlayer.getHouse(houseNumberSelected - 1).getSeeds();
+			mCurrentPlayer.getHouse(houseNumberSelected - 1).setSeeds(0);
 
 			int lastBoardIndex = 0; // the index of the global board in which the last seed was sown
 
@@ -50,17 +50,17 @@ public class Kalah {
 			} else {
 				Player playerBoardToDistributeOn = mCurrentPlayer;
 
-				for (int currentIndex = houseNumberSelected - 1; numberOfSeeds > 0; currentIndex++) {
-
+				for (int currentIndex = houseNumberSelected; numberOfSeeds > 0; currentIndex++) {
 					lastBoardIndex = currentIndex;
 
-					playerBoardToDistributeOn.getHouse(currentIndex).addSeeds(1);
-					numberOfSeeds--;
-
-					if (numberOfSeeds == 0) break;
+					if (currentIndex <= Player.NUMBER_OF_HOUSES - 1) {
+						playerBoardToDistributeOn.getHouse(currentIndex).addSeeds(1);
+						numberOfSeeds--;
+						if (numberOfSeeds == 0) break;
+					}
 
 					// check if we have reached the end of the board
-					if (currentIndex == Player.NUMBER_OF_HOUSES - 1) {
+					if (currentIndex >= Player.NUMBER_OF_HOUSES - 1) {
 						// check if we can place it in the store
 						boolean isStoreCurrentPlayers = playerBoardToDistributeOn.equals(mCurrentPlayer);
 						if (isStoreCurrentPlayers) {
