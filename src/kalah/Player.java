@@ -40,6 +40,10 @@ public class Player {
 		return mHouses.get(houseNumber);
 	}
 
+	public List<House> getHouses() {
+		return mHouses;
+	}
+
 	/**
 	 * Add the number of seeds collected to a players score
 	 *

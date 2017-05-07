@@ -18,162 +18,106 @@ public class Kalah {
 	private static int MIN_HOUSE_NUMBER = 1;
 	private static int MAX_HOUSE_NUMBER = Player.NUMBER_OF_HOUSES;
 
-	@NotNull private Player mCurrentPlayer;
+	@NotNull Player player1 = new Player();
+	@NotNull Player player2 = new Player();
+	@NotNull private Player mCurrentPlayer = player1;
 
-	private List<Pit> mPlayer1Board = new ArrayList<>();
-	private List<Pit> mPlayer2Board = new ArrayList<>();
-	private ArrayList<Pit> mGlobalBoard = new ArrayList<>();
+	private int houseNumberSelected;
 
 	public static void main(String[] args) {
 		new Kalah().play(new MockIO());
 	}
 
 	public void play(IO io) {
-
-		Player player1 = new Player();
-		Player player2 = new Player();
-
-		for (int i = 0; i < Player.NUMBER_OF_HOUSES; i++) {
-			mPlayer1Board.add(player1.getHouse(i));
-		}
-		mPlayer1Board.add(player1.getStore());
-
-		for (int i = 0; i < Player.NUMBER_OF_HOUSES; i++) {
-			mPlayer2Board.add(player2.getHouse(i));
-		}
-		mPlayer2Board.add(player2.getStore());
-
-		mGlobalBoard.addAll(mPlayer1Board);
-		mGlobalBoard.addAll(mPlayer2Board);
-
-		mCurrentPlayer = player1;
-
 		while (!isGameFinished()) {
-
 			printBoard(io);
 
-			int houseNumberSelected;
+			houseNumberSelected = io.readInteger(mCurrentPlayer.equals(player1) ? AsciiUtil.getPlayer1Turn() :
+					AsciiUtil.getPlayer2Turn(), MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER, CANCEL_CODE, "q");
 
-			if (mCurrentPlayer.equals(player1)) {
-				houseNumberSelected = io.readInteger(AsciiUtil.getPlayer1Turn(), MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER,
-						CANCEL_CODE, "q");
-			} else {
-				houseNumberSelected = io.readInteger(AsciiUtil.getPlayer2Turn(), MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER,
-                        CANCEL_CODE, "q");
+			if (houseNumberSelected == CANCEL_CODE) {
+				io.println("Game over");
+				break;
 			}
 
-			if (houseNumberSelected == CANCEL_CODE) break;
-
-			// translate the selected house into the 1D array/global board's position
-			int globalIndex = 0;
-			if (mCurrentPlayer.equals(player1)) {
-				globalIndex = houseNumberSelected - 1;
-			} else if (mCurrentPlayer.equals(player2)) {
-				globalIndex = houseNumberSelected + 6;
-			}
-
-			// move to the right from the beginning point
-			globalIndex = globalIndex + 1;
-			if (globalIndex == 13) globalIndex = 0; // we are at the end
-
-			House house = mCurrentPlayer.getHouse(houseNumberSelected - 1);
-			int numberOfSeeds = house.getSeeds();
-
+			int numberOfSeeds = mCurrentPlayer.getHouse(houseNumberSelected).getSeeds();
+			mCurrentPlayer.getHouse(houseNumberSelected).setSeeds(0);
 
 			int lastBoardIndex = 0; // the index of the global board in which the last seed was sown
-			for (int currentIndex = globalIndex; numberOfSeeds > 0; currentIndex++) {
-				if (currentIndex > 13) currentIndex = 0;
 
-				boolean isStore = mGlobalBoard.get(currentIndex) instanceof Store;
-				if (isStore && mCurrentPlayer.equals(mGlobalBoard.get(currentIndex).getOwner())) {
-					mGlobalBoard.get(currentIndex).addSeeds(1);
-					numberOfSeeds--;
+			if (numberOfSeeds == 0) {
+				io.println("House is empty. Move again.");
+			} else {
+				Player playerBoardToDistributeOn = mCurrentPlayer;
+
+				for (int currentIndex = houseNumberSelected - 1; numberOfSeeds > 0; currentIndex++) {
+
 					lastBoardIndex = currentIndex;
-				} else if (!isStore) {
-					mGlobalBoard.get(currentIndex).addSeeds(1);
+
+					playerBoardToDistributeOn.getHouse(currentIndex).addSeeds(1);
 					numberOfSeeds--;
-					lastBoardIndex = currentIndex;
+
+					if (numberOfSeeds == 0) break;
+
+					// check if we have reached the end of the board
+					if (currentIndex == Player.NUMBER_OF_HOUSES - 1) {
+						// check if we can place it in the store
+						boolean isStoreCurrentPlayers = playerBoardToDistributeOn.equals(mCurrentPlayer);
+						if (isStoreCurrentPlayers) {
+							playerBoardToDistributeOn.getStore().addSeeds(1);
+							numberOfSeeds--;
+							lastBoardIndex = -1;
+						}
+						// swap player's board if the current index is the last index on the board
+						playerBoardToDistributeOn = playerBoardToDistributeOn.equals(player1) ? player2 : player1;
+						currentIndex = 0;
+					}
 				}
-			}
 
-			mGlobalBoard.get(globalIndex-1).setSeeds(0);
-
-			// check if a player has won any seeds to be added to their score (capture)
-			if (mGlobalBoard.get(lastBoardIndex).equals(mCurrentPlayer) &&
-					mGlobalBoard.get(lastBoardIndex).getSeeds() == 0) {
-				int houseIndex;
-				if (lastBoardIndex < 7) {
-					houseIndex = globalIndex;
+				// check if the current playerBoardToDistributeOn gets another turn
+				// if the last seed sown is in the players store
+				if (lastBoardIndex == -1) {
+					io.println("You get another turn");
 				} else {
-					houseIndex = globalIndex + 5;
+					// check for capture, i.e. when you land on your own board that had no seeds in it
+					if (playerBoardToDistributeOn.equals(mCurrentPlayer) &&
+							playerBoardToDistributeOn.getHouse(lastBoardIndex).getSeeds() == 1) {
+						Player playerToCaptureFrom = mCurrentPlayer.equals(player1) ? player2 : player1;
+						House oppositeHouse = playerToCaptureFrom.getHouse(Player.NUMBER_OF_HOUSES - 1 -
+								lastBoardIndex);
+						oppositeHouse.setSeeds(0);
+						mCurrentPlayer.getStore().addSeeds(oppositeHouse.getSeeds() + 1);
+						mCurrentPlayer.getHouse(lastBoardIndex).setSeeds(0);
+					}
+					mCurrentPlayer = mCurrentPlayer.equals(player1) ? player2 : player1;
 				}
-				int oppositeHouseIndex = 2 * (Player.NUMBER_OF_HOUSES - houseIndex) + houseIndex;
-				// FIXME: set the opposite seeds to 0 ?
-				// FIXME: 6/05/2017 collect my own seed too and set the number of seeds to 0
-				int seedsToAdd = mGlobalBoard.get(oppositeHouseIndex).getSeeds();
-				mCurrentPlayer.addToScore(seedsToAdd);
-				// FIXME set the number of seeds back to 0;
 			}
+		}
 
-			// check if the current player gets another turn
-			// if the last seed sown is in the players store
-			if (mGlobalBoard.get(lastBoardIndex) instanceof Store && mGlobalBoard.get(numberOfSeeds + houseNumberSelected - 1)
-                    .getOwner() == mCurrentPlayer) {
-				io.println("You get another turn");
-			}
-
-			// check if its the other players turn
-			if (!mGlobalBoard.get(lastBoardIndex).getOwner().equals(mCurrentPlayer) || mGlobalBoard.get
-                    (lastBoardIndex).getSeeds() > 0) {
-				mCurrentPlayer = player2;
-			}
-
-			updatePlayerBoards();
-
+		if (houseNumberSelected != CANCEL_CODE) {
+			io.println("Score" + String.valueOf(player1.getScore() + player1.getStore().getSeeds()) + String.valueOf
+					(player2.getScore() + player1.getStore().getSeeds()));
 		}
 	}
 
+	/**
+	 * Determine if the game has finished
+	 *
+	 * @return True if the current player has no more seeds to play, false if otherwise
+	 */
 	private boolean isGameFinished() {
-
-		boolean isPlayer1Finished = true;
-		boolean isPlayer2Finished = true;
-
-		for (int i = 0; i < Player.NUMBER_OF_HOUSES; i++) {
-			if (mPlayer1Board.get(i).getSeeds() != 0) {
-				isPlayer1Finished = false;
-				break;
-			}
+		boolean isFinished = true;
+		for (House house : mCurrentPlayer.getHouses()) {
+			if (house.getSeeds() != 0) isFinished = false;
 		}
-
-		for (int i = 0; i < Player.NUMBER_OF_HOUSES; i++) {
-			if (mPlayer2Board.get(i).getSeeds() != 0) {
-				isPlayer2Finished = false;
-				break;
-
-			}
-		}
-		return isPlayer1Finished || isPlayer2Finished;
+		return isFinished;
 	}
 
-	// fix me should the simply return the strings to print then do the prining in the main function?
 	private void printBoard(IO io) {
 		io.println(AsciiUtil.getLineDecor1());
-		io.println(AsciiUtil.getTopBoard(mPlayer2Board, mPlayer1Board.get(mPlayer1Board.size() - 1).getSeeds()));
+		io.println(AsciiUtil.getTopBoard(player2.getHouses(), player1.getStore().getSeeds()));
 		io.println(AsciiUtil.getLineDecor2());
-		io.println(AsciiUtil.getBottomBoard(mPlayer1Board, mPlayer2Board.get(mPlayer2Board.size() - 1).getSeeds()));
+		io.println(AsciiUtil.getBottomBoard(player1.getHouses(), player2.getStore().getSeeds()));
 		io.println(AsciiUtil.getLineDecor1());
 	}
-
-	private void updatePlayerBoards() {
-		for (int i = 0; i < Player.NUMBER_OF_HOUSES; i++) {
-			mPlayer1Board.set(i, mGlobalBoard.get(i));
-		}
-		mPlayer1Board.set(mPlayer1Board.size() - 1, mGlobalBoard.get(Player.NUMBER_OF_HOUSES));
-
-		for (int i = Player.NUMBER_OF_HOUSES + 1; i < mGlobalBoard.size(); i++) {
-			mPlayer2Board.set(i - Player.NUMBER_OF_HOUSES - 1, mGlobalBoard.get(i));
-		}
-		mPlayer2Board.set(mPlayer2Board.size() - 1, mGlobalBoard.get(mGlobalBoard.size() - 1));
-	}
-
 }

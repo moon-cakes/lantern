@@ -1,5 +1,6 @@
 package kalah.util;
 
+import kalah.House;
 import kalah.model.Pit;
 
 import java.util.List;
@@ -37,26 +38,26 @@ public class AsciiUtil {
 	/**
 	 * Get the top board of the game
 	 *
-	 * @param player2Board      Player 2's board
+	 * @param player2House      Player 2's house
 	 * @param player1StoreSeeds The number of seeds in player 1's store
 	 * @return A string representing the top board
 	 */
-	public static String getTopBoard(List<Pit> player2Board, int player1StoreSeeds) {
+	public static String getTopBoard(List<House> player2House, int player1StoreSeeds) {
 		String board = replaceStoreSeeds(player1StoreSeeds, TOP_BOARD_TEMPLATE);
-		board = replaceHouseSeeds(player2Board, board);
+		board = replaceHouseSeeds(player2House, board);
 		return board;
 	}
 
 	/**
 	 * Get the bottom board of the game
 	 *
-	 * @param player1Board      Player 1's board
+	 * @param player1House      Player 1's house
 	 * @param player2StoreSeeds The number of seeds in player 2's store
 	 * @return A string representing the bottom board
 	 */
-	public static String getBottomBoard(List<Pit> player1Board, int player2StoreSeeds) {
+	public static String getBottomBoard(List<House> player1House, int player2StoreSeeds) {
 		String board = replaceStoreSeeds(player2StoreSeeds, BOTTOM_BOARD_TEMPLATE);
-		board = replaceHouseSeeds(player1Board, board);
+		board = replaceHouseSeeds(player1House, board);
 		return board;
 	}
 
@@ -78,15 +79,15 @@ public class AsciiUtil {
 	/**
 	 * Update the current number of seed's in a House with a new number of seeds
 	 *
-	 * @param playerBoard The player's board to get the seeds from
+	 * @param house The house to get the seeds from
 	 * @param board       The template of the board to use
 	 * @return A string containing the updated number of seeds in houses
 	 */
-	private static String replaceHouseSeeds(List<Pit> playerBoard, String board) {
+	private static String replaceHouseSeeds(List<House> house, String board) {
 		char[] alphabet = "abcdef".toCharArray();
-		for (int i = 0; i < playerBoard.size() - 1; i++) {
+		for (int i = 0; i < house.size(); i++) {
 			String characterToReplace = String.valueOf(alphabet[i]);
-			int seeds = playerBoard.get(i).getSeeds();
+			int seeds = house.get(i).getSeeds();
 			if (seeds < 10) {
 				board = board.replace(characterToReplace, " " + String.valueOf(seeds));
 			} else {
