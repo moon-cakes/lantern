@@ -78,9 +78,7 @@ public class Kalah {
 
 				// check if the current playerBoardToDistributeOn gets another turn
 				// if the last seed sown is in the players store
-				if (lastBoardIndex == -1) {
-					io.println("You get another turn");
-				} else {
+				if (lastBoardIndex != -1) {
 					// check for capture, i.e. when you land on your own board that had no seeds in it
 					if (playerBoardToDistributeOn.equals(mCurrentPlayer) &&
 							playerBoardToDistributeOn.getHouse(lastBoardIndex).getSeeds() == 1) {
