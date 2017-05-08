@@ -16,12 +16,11 @@ public class PrintUtil {
 	private static int MIN_HOUSE_NUMBER = 1;
 	private static int MAX_HOUSE_NUMBER = Player.NUMBER_OF_HOUSES;
 
-	private static String PLAYER_1_TURN = "Player P1's turn - Specify house number or 'q' to quit: ";
-	private static String PLAYER_2_TURN = "Player P2's turn - Specify house number or 'q' to quit: ";
+	private static String PROMPT = "Player P[x]'s turn - Specify house number or 'q' to quit: ";
 
 	public static int printPromptMessage(IO io, Player currentPlayer, Player player1) {
-		return io.readInteger(currentPlayer.equals(player1) ? PLAYER_1_TURN : PLAYER_2_TURN, MIN_HOUSE_NUMBER,
-				MAX_HOUSE_NUMBER, CANCEL_CODE, "q");
+		return io.readInteger(currentPlayer.equals(player1) ? PROMPT.replace("[x]", "1") :
+						PROMPT.replace("[x]", "2"), MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER, CANCEL_CODE, "q");
 	}
 
 	public static void printBoard(IO io, Player player1, Player player2) {
