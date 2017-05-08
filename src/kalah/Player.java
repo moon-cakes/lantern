@@ -9,8 +9,8 @@ import java.util.List;
 public class Player {
 
 	public static final int NUMBER_OF_HOUSES = 6;
+	private List<House> mHouses = new ArrayList<>(NUMBER_OF_HOUSES);
 
-	private List<House> mHouses = new ArrayList<>();
 	private Store mStore = new Store();
 
 	public Player() {
@@ -25,12 +25,19 @@ public class Player {
 	 * @param houseNumber The houseNumber of the house to be retrieved
 	 * @return a House according to a house number                                                         /
 	 */
-	public House getHouse(int houseNumber) {
+	House getHouse(int houseNumber) {
 		return mHouses.get(houseNumber);
 	}
 
 	public List<House> getHouses() {
 		return mHouses;
+	}
+
+	boolean areAllHousesEmpty() {
+		for (House house : mHouses) {
+			if (house.getSeeds() != 0) return false;
+		}
+		return true;
 	}
 
 	/**
@@ -47,7 +54,7 @@ public class Player {
 	 *
 	 * @return The score for the player
 	 */
-	public int getScore() {
+	int getScore() {
 		int houseSeeds = 0;
 		for (House house : mHouses) {
 			houseSeeds += house.getSeeds();

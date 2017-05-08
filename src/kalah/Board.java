@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * A class that represents the Mancala board.
  */
-public class Board {
+class Board {
 
 	@NotNull private Player mPlayer1 = new Player();
 	@NotNull private Player mPlayer2 = new Player();
@@ -17,7 +17,7 @@ public class Board {
 	void update(int houseNumberSelected) throws IOException {
 
 		int numberOfSeeds = mCurrentPlayer.getHouse(houseNumberSelected - 1).getSeeds();
-		mCurrentPlayer.getHouse(houseNumberSelected - 1).setSeeds(0);
+		mCurrentPlayer.getHouse(houseNumberSelected - 1).resetSeeds();
 
 		int lastBoardIndex = 0; // the index of the global board in which the last seed was sown
 
@@ -62,8 +62,8 @@ public class Board {
 							lastBoardIndex);
 					if (oppositeHouse.getSeeds() != 0) {
 						mCurrentPlayer.getStore().addSeeds(oppositeHouse.getSeeds() + 1);
-						oppositeHouse.setSeeds(0);
-						mCurrentPlayer.getHouse(lastBoardIndex).setSeeds(0);
+						oppositeHouse.resetSeeds();
+						mCurrentPlayer.getHouse(lastBoardIndex).resetSeeds();
 					}
 				}
 				mCurrentPlayer = mCurrentPlayer.equals(mPlayer1) ? mPlayer2 : mPlayer1;
@@ -89,11 +89,6 @@ public class Board {
 	 * @return True if the current player has no more seeds to play, false if otherwise
 	 */
 	boolean isGameFinished() {
-		boolean isFinished = true;
-		for (House house : mCurrentPlayer.getHouses()) {
-			if (house.getSeeds() != 0) isFinished = false;
-		}
-		return isFinished;
+		return mCurrentPlayer.areAllHousesEmpty();
 	}
-
 }

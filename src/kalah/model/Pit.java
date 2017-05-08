@@ -8,7 +8,5 @@ public interface Pit {
     void addSeeds(int numberOfSeeds);
 
     int getSeeds();
-
-    void setSeeds(int seeds);
 }
 
