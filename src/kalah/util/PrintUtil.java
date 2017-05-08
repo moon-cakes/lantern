@@ -4,6 +4,7 @@ import com.qualitascorpus.testsupport.IO;
 import kalah.House;
 import kalah.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,12 +16,6 @@ public class PrintUtil {
 	private static int MIN_HOUSE_NUMBER = 1;
 	private static int MAX_HOUSE_NUMBER = Player.NUMBER_OF_HOUSES;
 
-	private static String LINE_DECOR_1 = "+----+-------+-------+-------+-------+-------+-------+----+";
-	private static String LINE_DECOR_2 = "|    |-------+-------+-------+-------+-------+-------|    |";
-
-	private static String TOP_BOARD_TEMPLATE = "| P2 | 6[f] | 5[e] | 4[d] | 3[c] | 2[b] | 1[a] | s |";
-	private static String BOTTOM_BOARD_TEMPLATE = "| s | 1[a] | 2[b] | 3[c] | 4[d] | 5[e] | 6[f] | P1 |";
-
 	private static String PLAYER_1_TURN = "Player P1's turn - Specify house number or 'q' to quit: ";
 	private static String PLAYER_2_TURN = "Player P2's turn - Specify house number or 'q' to quit: ";
 
@@ -30,11 +25,30 @@ public class PrintUtil {
 	}
 
 	public static void printBoard(IO io, Player player1, Player player2) {
-		io.println(LINE_DECOR_1);
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("+----");
+		for (int i = 0; i < MAX_HOUSE_NUMBER; i++) {
+			stringBuilder.append("+-------");
+		}
+		stringBuilder.append("+----+");
+		String lineDecor1 = stringBuilder.toString();
+
+		stringBuilder.setLength(0);
+		stringBuilder.append("|    |");
+		for (int i = 0; i < MAX_HOUSE_NUMBER - 1; i++) {
+			stringBuilder.append("-------+");
+		}
+		stringBuilder.append("-------");
+		stringBuilder.append("|    |");
+		String lineDecor2 = stringBuilder.toString();
+
+		io.println(lineDecor1);
 		io.println(PrintUtil.getTopBoard(player2.getHouses(), player1.getStore().getSeeds()));
-		io.println(LINE_DECOR_2);
+		io.println(lineDecor2);
 		io.println(PrintUtil.getBottomBoard(player1.getHouses(), player2.getStore().getSeeds()));
-		io.println(LINE_DECOR_1);
+		io.println(lineDecor1);
+
 	}
 
 	public static void printChosenHouseIsEmpty(IO io) {
@@ -66,9 +80,15 @@ public class PrintUtil {
 	 * @return A string representing the top board
 	 */
 	private static String getTopBoard(List<House> player2House, int player1StoreSeeds) {
-		String board = replaceStoreSeeds(player1StoreSeeds, TOP_BOARD_TEMPLATE);
-		board = replaceHouseSeeds(player2House, board);
-		return board;
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("| P2 ");
+		for (int i = player2House.size(); i > 0; i--) {
+			String housePadding = getPadding(player2House.get(i - 1).getSeeds());
+			stringBuilder.append("| " + (i) + "[" + housePadding + player2House.get(i - 1).getSeeds() + "] ");
+		}
+		String seedsPadding = getPadding(player1StoreSeeds);
+		stringBuilder.append("| " + seedsPadding + String.valueOf(player1StoreSeeds) + " |");
+		return stringBuilder.toString();
 	}
 
 	/**
@@ -79,38 +99,21 @@ public class PrintUtil {
 	 * @return A string representing the bottom board
 	 */
 	private static String getBottomBoard(List<House> player1House, int player2StoreSeeds) {
-		String board = replaceStoreSeeds(player2StoreSeeds, BOTTOM_BOARD_TEMPLATE);
-		board = replaceHouseSeeds(player1House, board);
-		return board;
-	}
-
-	/**
-	 * Update the current number of seed's in a Store with a new number of seeds
-	 *
-	 * @param seeds The number of seeds the store contains
-	 * @param board The template of the board to use
-	 * @return A String containing the updated number of seeds in the store
-	 */
-	private static String replaceStoreSeeds(int seeds, String board) {
-		return seeds < 10 ? board.replace("s", " " + String.valueOf(seeds)) :
-				board.replace("s", String.valueOf(seeds));
-	}
-
-	/**
-	 * Update the current number of seed's in a House with a new number of seeds
-	 *
-	 * @param house The house to get the seeds from
-	 * @param board The template of the board to use
-	 * @return A string containing the updated number of seeds in houses
-	 */
-	private static String replaceHouseSeeds(List<House> house, String board) {
-		char[] alphabet = "abcdef".toCharArray();
-		for (int i = 0; i < house.size(); i++) {
-			String characterToReplace = String.valueOf(alphabet[i]);
-			int seeds = house.get(i).getSeeds();
-			board = seeds < 10 ? board.replace(characterToReplace, " " + String.valueOf(seeds)) :
-					board.replace(characterToReplace, String.valueOf(seeds));
+		StringBuilder stringBuilder = new StringBuilder();
+		String seedsPadding = getPadding(player2StoreSeeds);
+		stringBuilder.append("| " + String.valueOf(seedsPadding) + String.valueOf(player2StoreSeeds) + " ");
+		for (int i = 0; i < player1House.size(); i++) {
+			String housePadding = getPadding(player1House.get(i).getSeeds());
+			stringBuilder.append("| " + (i + 1) + "[" + housePadding + player1House.get(i).getSeeds() + "] ");
 		}
-		return board;
+		stringBuilder.append("| P1 |");
+		return stringBuilder.toString();
+	}
+
+	private static String getPadding(int number) {
+		int paddingSize = 2;
+		char[] pad = new char[paddingSize - String.valueOf(number).length()];
+		Arrays.fill(pad, ' ');
+		return String.valueOf(pad);
 	}
 }
