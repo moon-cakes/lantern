@@ -1,8 +1,6 @@
 package kalah;
 
-import com.qualitascorpus.testsupport.IO;
 import com.sun.istack.internal.NotNull;
-import kalah.util.AsciiUtil;
 
 import java.io.IOException;
 
@@ -24,7 +22,7 @@ public class Board {
 		int lastBoardIndex = 0; // the index of the global board in which the last seed was sown
 
 		if (numberOfSeeds == 0) {
-			throw new IOException("House has no seeds");
+			throw new IOException("The chosen house has no seeds");
 		} else {
 			Player playerBoardToDistributeOn = mCurrentPlayer;
 
@@ -98,11 +96,4 @@ public class Board {
 		return isFinished;
 	}
 
-	void print(IO io) {
-		io.println(AsciiUtil.getLineDecor1());
-		io.println(AsciiUtil.getTopBoard(mPlayer2.getHouses(), mPlayer1.getStore().getSeeds()));
-		io.println(AsciiUtil.getLineDecor2());
-		io.println(AsciiUtil.getBottomBoard(mPlayer1.getHouses(), mPlayer2.getStore().getSeeds()));
-		io.println(AsciiUtil.getLineDecor1());
-	}
 }

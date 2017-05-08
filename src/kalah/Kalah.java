@@ -2,7 +2,7 @@ package kalah;
 
 import com.qualitascorpus.testsupport.IO;
 import com.qualitascorpus.testsupport.MockIO;
-import kalah.util.AsciiUtil;
+import kalah.util.PrintUtil;
 
 import java.io.IOException;
 
@@ -11,56 +11,41 @@ import java.io.IOException;
  */
 public class Kalah {
 
-	private static int CANCEL_CODE = -1;
-	private static int MIN_HOUSE_NUMBER = 1;
-	private static int MAX_HOUSE_NUMBER = Player.NUMBER_OF_HOUSES;
-
 	public static void main(String[] args) {
 		new Kalah().play(new MockIO());
 	}
 
 	public void play(IO io) {
 
-		int houseNumberSelected = 0;
 		Board board = new Board();
+		int houseNumberSelected = 0;
 
 		while (true) {
 
-			board.print(io);
+			PrintUtil.printBoard(io, board.getPlayer1(), board.getPlayer2());
 
 			if (board.isGameFinished()) break;
 
-			Player mCurrentPlayer = board.getCurrentPlayer();
-			houseNumberSelected = io.readInteger(mCurrentPlayer.equals(board.getPlayer1()) ? AsciiUtil.getPlayer1Turn
-					() : AsciiUtil.getPlayer2Turn(), MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER, CANCEL_CODE, "q");
+			Player currentPlayer = board.getCurrentPlayer();
+			houseNumberSelected = PrintUtil.printPromptMessage(io, currentPlayer, board.getPlayer1());
 
-			if (houseNumberSelected == CANCEL_CODE) break;
+			if (houseNumberSelected == PrintUtil.CANCEL_CODE) break;
 
 			try {
 				board.update(houseNumberSelected);
 			} catch (IOException e) {
-				e.getMessage();
-				io.println("House is empty. Move again.");
+				PrintUtil.printChosenHouseIsEmpty(io);
 			}
 		}
 
-		io.println("Game over");
-		board.print(io);
+		PrintUtil.printGameOver(io);
+		PrintUtil.printBoard(io, board.getPlayer1(), board.getPlayer2());
 
-		if (houseNumberSelected != CANCEL_CODE) {
-			Player player1 = board.getPlayer1();
-			Player player2 = board.getPlayer2();
+		if (houseNumberSelected != PrintUtil.CANCEL_CODE) {
+			int player1Score = board.getPlayer1().getScore();
+			int player2Score = board.getPlayer2().getScore();
 
-			io.println("\tplayer 1:" + player1.getScore());
-			io.println("\tplayer 2:" + player2.getScore());
-
-			if (player1.getScore() > player2.getScore()) {
-				io.println("Player 1 wins!");
-			} else if (player2.getScore() > player1.getScore()) {
-				io.println("Player 2 wins!");
-			} else {
-				io.println("A tie!");
-			}
+			PrintUtil.printScores(io, player1Score, player2Score);
 		}
 	}
 }

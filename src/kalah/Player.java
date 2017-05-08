@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Player {
 
-	static final int NUMBER_OF_HOUSES = 6;
+	public static final int NUMBER_OF_HOUSES = 6;
 
 	private List<House> mHouses = new ArrayList<>();
 	private Store mStore = new Store();
