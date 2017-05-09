@@ -1,6 +1,8 @@
 package kalah;
 
 import com.sun.istack.internal.NotNull;
+import kalah.model.House;
+import kalah.model.Player;
 
 import java.io.IOException;
 
@@ -9,8 +11,8 @@ import java.io.IOException;
  */
 class Board {
 
-	@NotNull private Player mPlayer1 = new Player();
-	@NotNull private Player mPlayer2 = new Player();
+	@NotNull private Player mPlayer1 = new Player(Rules.NUMBER_OF_HOUSES, Rules.STARTING_NUMBER_OF_SEEDS);
+	@NotNull private Player mPlayer2 = new Player(Rules.NUMBER_OF_HOUSES, Rules.STARTING_NUMBER_OF_SEEDS);
 	@NotNull private Player mCurrentPlayer = mPlayer1;
 
 	// update board method
@@ -29,14 +31,14 @@ class Board {
 			for (int currentIndex = houseNumberSelected; numberOfSeeds > 0; currentIndex++) {
 				lastBoardIndex = currentIndex;
 
-				if (currentIndex <= Player.NUMBER_OF_HOUSES - 1) {
+				if (currentIndex <= Rules.NUMBER_OF_HOUSES - 1) {
 					playerBoardToDistributeOn.getHouse(currentIndex).addSeeds(1);
 					numberOfSeeds--;
 					if (numberOfSeeds == 0) break;
 				}
 
 				// check if we have reached the end of the board
-				if (currentIndex >= Player.NUMBER_OF_HOUSES - 1) {
+				if (currentIndex >= Rules.NUMBER_OF_HOUSES - 1) {
 					// check if we can place it in the store
 					boolean isStoreCurrentPlayers = playerBoardToDistributeOn.equals(mCurrentPlayer);
 					if (isStoreCurrentPlayers) {
@@ -58,7 +60,7 @@ class Board {
 				if (playerBoardToDistributeOn.equals(mCurrentPlayer) &&
 						playerBoardToDistributeOn.getHouse(lastBoardIndex).getSeeds() == 1) {
 					Player playerToCaptureFrom = mCurrentPlayer.equals(mPlayer1) ? mPlayer2 : mPlayer1;
-					House oppositeHouse = playerToCaptureFrom.getHouse(Player.NUMBER_OF_HOUSES - 1 -
+					House oppositeHouse = playerToCaptureFrom.getHouse(Rules.NUMBER_OF_HOUSES - 1 -
 							lastBoardIndex);
 					if (oppositeHouse.getSeeds() != 0) {
 						mCurrentPlayer.getStore().addSeeds(oppositeHouse.getSeeds() + 1);

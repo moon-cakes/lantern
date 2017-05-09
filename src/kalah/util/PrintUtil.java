@@ -1,8 +1,8 @@
 package kalah.util;
 
 import com.qualitascorpus.testsupport.IO;
-import kalah.House;
-import kalah.Player;
+import kalah.model.House;
+import kalah.model.Player;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,21 +12,18 @@ import java.util.List;
  */
 public class PrintUtil {
 
-	private static int MIN_HOUSE_NUMBER = 1;
-	private static int MAX_HOUSE_NUMBER = Player.NUMBER_OF_HOUSES;
-	public static int CANCEL_CODE = -1;
-
-	public static int printPromptMessage(IO io, Player currentPlayer, Player player1) {
+	public static int printPromptMessage(IO io, Player currentPlayer, Player player1, int minHouseNumber, int
+			maxHouseNumber, int cancelCode) {
 		String prompt = "Player P%d's turn - Specify house number or 'q' to quit: ";
 		return io.readInteger(currentPlayer.equals(player1) ? String.format(prompt, 1) : String.format(prompt, 2),
-				MIN_HOUSE_NUMBER, MAX_HOUSE_NUMBER, CANCEL_CODE, "q");
+				minHouseNumber, maxHouseNumber, cancelCode, "q");
 	}
 
-	public static void printBoard(IO io, Player player1, Player player2) {
+	public static void printBoard(IO io, Player player1, Player player2, int maxHouseNumber) {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("+----");
-		for (int i = 0; i < MAX_HOUSE_NUMBER; i++) {
+		for (int i = 0; i < maxHouseNumber; i++) {
 			stringBuilder.append("+-------");
 		}
 		stringBuilder.append("+----+");
@@ -34,7 +31,7 @@ public class PrintUtil {
 
 		stringBuilder.setLength(0);
 		stringBuilder.append("|    |");
-		for (int i = 0; i < MAX_HOUSE_NUMBER - 1; i++) {
+		for (int i = 0; i < maxHouseNumber - 1; i++) {
 			stringBuilder.append("-------+");
 		}
 		stringBuilder.append("-------");
@@ -46,7 +43,6 @@ public class PrintUtil {
 		io.println(lineDecor2);
 		io.println(PrintUtil.getBottomBoard(player1.getHouses(), player2.getStore().getSeeds()));
 		io.println(lineDecor1);
-
 	}
 
 	public static void printChosenHouseIsEmpty(IO io) {
@@ -108,6 +104,13 @@ public class PrintUtil {
 		return stringBuilder.toString();
 	}
 
+	/**
+	 * Return the amount of padding (blank spaces) to add to the strings. Padding is only added
+	 * if the number is less than 10.
+	 *
+	 * @param number The number to calculate the padding for
+	 * @return A string containg the amount of padding
+	 */
 	private static String getPadding(int number) {
 		int paddingSize = 2;
 		char[] pad = new char[paddingSize - String.valueOf(number).length()];

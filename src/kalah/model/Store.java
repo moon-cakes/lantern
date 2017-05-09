@@ -1,6 +1,4 @@
-package kalah;
-
-import kalah.model.Pit;
+package kalah.model;
 
 /**
  * A Store which is owned by a {@link Player}

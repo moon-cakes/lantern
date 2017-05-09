@@ -1,14 +1,15 @@
-package kalah;
-
-import kalah.model.Pit;
+package kalah.model;
 
 /**
  * A House which is owned by a {@link Player}
  */
 public class House implements Pit {
 
-	private static int INITIAL_NUMBER_OF_SEEDS = 4;
-	private int mSeeds = INITIAL_NUMBER_OF_SEEDS;
+	private int mSeeds;
+
+	public House(int numberOfStartingSeeds) {
+		this.mSeeds = numberOfStartingSeeds;
+	}
 
 	@Override
 	public void addSeeds(int numberOfSeeds) {
@@ -20,7 +21,7 @@ public class House implements Pit {
 		return mSeeds;
 	}
 
-	void resetSeeds() {
+	public void resetSeeds() {
 		mSeeds = 0;
 	}
 }
