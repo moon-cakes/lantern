@@ -56,16 +56,19 @@ public class PrintUtil {
 	public static void printScores(IO io, int player1Score, int player2Score) {
 		io.println("\tplayer 1:" + player1Score);
 		io.println("\tplayer 2:" + player2Score);
-
-		if (player1Score > player2Score) {
-			io.println("Player 1 wins!");
-		} else if (player2Score > player1Score) {
-			io.println("Player 2 wins!");
-		} else {
-			io.println("A tie!");
-		}
 	}
 
+	public static void printPlayer1Wins(IO io) {
+		io.println("Player 1 wins!");
+	}
+
+	public static void printPlayer2Wins(IO io) {
+		io.println("Player 2 wins!");
+	}
+
+	public static void printTie(IO io) {
+		io.println("A tie!");
+	}
 	/**
 	 * Get the top board of the game
 	 *

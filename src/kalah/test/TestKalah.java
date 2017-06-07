@@ -44,7 +44,6 @@ public class TestKalah extends TestCase {
 		playGame("/test/endinempty.txt");
 	}
 
-
 	/**
 	 * Player 1 wins
 	 */

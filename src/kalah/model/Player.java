@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A player who plays the game and had a score. A player has 6 {@link House's} and a {@link Store}.
+ * Represents a Player object who has some houses and a store
  */
 public class Player {
 
@@ -47,16 +47,11 @@ public class Player {
 		return mStore;
 	}
 
-	/**
-	 * Get the total score for the player calculated from the seeds in her store and seeds in the house
-	 *
-	 * @return The score for the player
-	 */
-	public int getScore() {
+	public int getHouseSeeds() {
 		int houseSeeds = 0;
 		for (House house : mHouses) {
 			houseSeeds += house.getSeeds();
 		}
-		return mStore.getSeeds() + houseSeeds;
+		return houseSeeds;
 	}
 }

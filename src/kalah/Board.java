@@ -4,10 +4,9 @@ import com.sun.istack.internal.NotNull;
 import kalah.model.House;
 import kalah.model.Player;
 
-import java.io.IOException;
-
 /**
- * A class that represents the Mancala board.
+ * A class that represents one round or one move of the game. It distributes the seeds and checks
+ * if rules are met.
  */
 class Board {
 
@@ -15,21 +14,49 @@ class Board {
 	@NotNull private Player mPlayer2 = new Player(Rules.NUMBER_OF_HOUSES, Rules.STARTING_NUMBER_OF_SEEDS);
 	@NotNull private Player mCurrentPlayer = mPlayer1;
 
+	Player getPlayer1() {
+		return mPlayer1;
+	}
+
+	Player getPlayer2() {
+		return mPlayer2;
+	}
+
+	Player getCurrentPlayer() {
+		return mCurrentPlayer;
+	}
+
+	boolean isGameFinished() {
+		return Rules.isGameFinished(mCurrentPlayer, mPlayer1, mPlayer2);
+	}
+
+	Player getWinner() {
+		return Rules.getWinner(mPlayer1, mPlayer2);
+	}
+
+	int getPlayer1Score() {
+		return Rules.getScore(mPlayer1);
+	}
+
+	int getPlayer2Score() {
+		return Rules.getScore(mPlayer2);
+	}
+
 	// update board method
-	void update(int houseNumberSelected) throws IOException {
+	void update(int houseNumberSelected) throws ChosenHouseIsEmptyException {
 
 		int numberOfSeeds = mCurrentPlayer.getHouse(houseNumberSelected - 1).getSeeds();
 		mCurrentPlayer.getHouse(houseNumberSelected - 1).resetSeeds();
 
-		int lastBoardIndex = 0; // the index of the global board in which the last seed was sown
+		int lastSeedDistributedIndex = 0; // the index of the global board in which the last seed was sown
 
 		if (numberOfSeeds == 0) {
-			throw new IOException("The chosen house has no seeds");
+			throw new ChosenHouseIsEmptyException();
 		} else {
 			Player playerBoardToDistributeOn = mCurrentPlayer;
 
 			for (int currentIndex = houseNumberSelected; numberOfSeeds > 0; currentIndex++) {
-				lastBoardIndex = currentIndex;
+				lastSeedDistributedIndex = currentIndex;
 
 				if (currentIndex <= Rules.NUMBER_OF_HOUSES - 1) {
 					playerBoardToDistributeOn.getHouse(currentIndex).addSeeds(1);
@@ -44,7 +71,7 @@ class Board {
 					if (isStoreCurrentPlayers) {
 						playerBoardToDistributeOn.getStore().addSeeds(1);
 						numberOfSeeds--;
-						lastBoardIndex = -1;
+						lastSeedDistributedIndex = -1;
 					}
 					// swap player's board if the current index is the last index on the board
 					playerBoardToDistributeOn = playerBoardToDistributeOn.equals(mPlayer1) ? mPlayer2 : mPlayer1;
@@ -55,42 +82,21 @@ class Board {
 
 			// check if the current player gets another turn
 			// if the last seed sown is in the players store
-			if (lastBoardIndex != -1) {
-				// check for capture, i.e. when you land on your own board that had no seeds in it
+			if (lastSeedDistributedIndex != -1) {
+				// check for capture, i.e. when you land on your own board and it had no seeds in it
 				if (playerBoardToDistributeOn.equals(mCurrentPlayer) &&
-						playerBoardToDistributeOn.getHouse(lastBoardIndex).getSeeds() == 1) {
+						playerBoardToDistributeOn.getHouse(lastSeedDistributedIndex).getSeeds() == 1) {
 					Player playerToCaptureFrom = mCurrentPlayer.equals(mPlayer1) ? mPlayer2 : mPlayer1;
 					House oppositeHouse = playerToCaptureFrom.getHouse(Rules.NUMBER_OF_HOUSES - 1 -
-							lastBoardIndex);
-					if (oppositeHouse.getSeeds() != 0) {
+							lastSeedDistributedIndex);
+					if (oppositeHouse.getSeeds() != 0 || Rules.CAPTURE_ON_EMPTY_HOUSE) {
 						mCurrentPlayer.getStore().addSeeds(oppositeHouse.getSeeds() + 1);
 						oppositeHouse.resetSeeds();
-						mCurrentPlayer.getHouse(lastBoardIndex).resetSeeds();
+						mCurrentPlayer.getHouse(lastSeedDistributedIndex).resetSeeds();
 					}
 				}
 				mCurrentPlayer = mCurrentPlayer.equals(mPlayer1) ? mPlayer2 : mPlayer1;
 			}
 		}
-	}
-
-	Player getPlayer1() {
-		return mPlayer1;
-	}
-
-	Player getPlayer2() {
-		return mPlayer2;
-	}
-
-	Player getCurrentPlayer() {
-		return mCurrentPlayer;
-	}
-
-	/**
-	 * Determine if the game has finished
-	 *
-	 * @return True if the current player has no more seeds to play, false if otherwise
-	 */
-	boolean isGameFinished() {
-		return mCurrentPlayer.areAllHousesEmpty();
 	}
 }
